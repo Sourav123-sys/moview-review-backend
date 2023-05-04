@@ -104,3 +104,56 @@ exports.emailVerify =async (req, res) => {
     })
     res.json({ message: "Email is Verified.you can go to the app now." })
 }
+
+
+exports.resendEmailVerificationToken =async  (req, res) => { 
+
+
+    const { userId } = req.body
+    const user = await User.findById(userId)
+
+    if (!user) {
+        return res.json({ error: "user not found" })
+    }
+    if (user.isVerified) {
+        return res.json({ error: "user is already verified" })
+    }
+    const alreadyHasToken = await EmailVerificationToken.findOne({ owner: userId })
+    if (alreadyHasToken ) {
+        return res.json({ error: "you can req for another OTP after 1 hour" })
+    }
+    let OTP = ""
+    for (let i = 0; i <= 3; i++){
+        const randomValue = Math.round(Math.random() * 9)
+        OTP += randomValue
+    }
+
+    const newEmailVerficationToken = new EmailVerificationToken({ owner: user._id, token: OTP })
+    
+    await newEmailVerficationToken.save()
+
+    var transport = nodemailer.createTransport({
+        host: "sandbox.smtp.mailtrap.io",
+        port: 2525,
+        auth: {
+          user: "bcd3e16f23ebe5",
+          pass: "b9fa941bb8bd8a"
+        }
+    });
+    transport.sendMail({
+        from: "verificationMoviewApp@gmail.com",
+                to: user.email,
+                subject: "Email Verification",
+       
+                html: `
+                <p>Hello ${user.name},</p>
+                <h1>Your Verification Code is ${OTP}.</h1>
+                <p>Please,verify your email </p>
+                `
+    })
+    res.status(201).json({
+        message: 'OTP has been  successfully send again .please verify your email .',
+       
+    })
+  
+}
