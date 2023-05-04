@@ -12,7 +12,7 @@ const port = process.env.PORT || 4000
 
 
 //middleware
-//app.use(express.json())
+
 app.use(bodyParser.json())
 //app.use(cors())
 const corsConfig = {
@@ -21,17 +21,6 @@ const corsConfig = {
   }
   app.use(cors(corsConfig))
   app.options('*', cors(corsConfig))
-
-
- 
-
-
-//connect to db
-
-
-//const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.eowzq.mongodb.net/?retryWrites=true&w=majority`;
-//const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-
 
 
 //router

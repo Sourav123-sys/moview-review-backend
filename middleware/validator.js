@@ -8,7 +8,7 @@ exports.userValidator = [
 
 exports.validate = (req, res, next) => { 
     const error = validationResult(req).array();
-    console.log(error);
+    //console.log(error);
 //if (!error.isEmpty()) {
 //  console.log(error.array());
  // return res.status(400).json({ errors: error.array() });
