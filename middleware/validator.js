@@ -6,6 +6,17 @@ exports.userValidator = [
     check('password').trim().notEmpty().withMessage("password is missing").isLength({ min:4,max:8}).withMessage("password must be 4 to 8 characters")
 ]
 
+exports.validatePassWord = [
+    check('name').trim().notEmpty().withMessage("name is invalid"),
+  
+    check('email').trim().normalizeEmail().notEmpty().isEmail().withMessage("email is invalid"),
+    check('newPassWord').trim().notEmpty().withMessage("password is missing").isLength({ min:4,max:8}).withMessage("password must be 4 to 8 characters")
+]
+exports.signInValidator= [
+    
+    check('email').trim().normalizeEmail().notEmpty().isEmail().withMessage("Email is invalid"),
+    check('password').trim().notEmpty().withMessage("Password is missing")
+]
 exports.validate = (req, res, next) => { 
     const error = validationResult(req).array();
     //console.log(error);

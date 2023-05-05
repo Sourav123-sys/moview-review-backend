@@ -7,6 +7,8 @@ const crypto = require("crypto")
 const { generateOTP, generateMailTransport } = require('../utils/mail')
 const PasswordResetToken = require('../models/passwordResetToken')
 const { generateRandomByte } = require('../utils/helper')
+const jwt = require('jsonwebtoken');
+
 
 exports.create = async (req, res) => {
     const { name, email, password } = req.body
@@ -71,7 +73,7 @@ exports.emailVerify =async (req, res) => {
     if (!token) {
         return res.json({ error: "token not found" })
     }
-    const isMatch = await token.compaireToken(OTP)
+    const isMatch = await token.compareToken(OTP)
     if (!isMatch) { 
         return res.json({ error: "you entered wrong OTP. Please submit orginal OTP" })
     }
@@ -191,12 +193,13 @@ exports.forgetPassword = async (req, res) => {
     transport.sendMail({
         from: "security@MoviewApp.com",
                 to: user.email,
-                subject: "Reset Password Link ",
+                subject: "password reset successfully",
        
                 html: `
                 <p>Hello ${user.name},</p>
-                <h1>Here is your reset password link.</h1>
-                <a href='${resetPasswordUrl}'>Change Password</a>
+                <p>Here is your reset password link</p>
+                <a href='${resetPasswordUrl}'>Change password</a>
+              
                 `
     })
     res.status(201).json({
@@ -204,3 +207,72 @@ exports.forgetPassword = async (req, res) => {
        
     })
 }
+
+
+exports.sendResetPassTokenStatus =  (req, res) => {
+    res.json({valid: true})
+}
+
+exports.resetPassWord = async (req, res) => {
+    const { newPassWord,userId } = req.body
+    
+    const user = await User.findById(userId)
+
+    const matched = await user.comparePassWord(newPassWord)
+
+    if (matched) {
+            return res.status(401).json({ error: "you entered your old password.Try to give a new password" })
+        }
+    user.password = newPassWord
+    await user.save()
+
+await PasswordResetToken.findByIdAndDelete(req.resetToken._id)
+
+    var transport = nodemailer.createTransport({
+        host: "sandbox.smtp.mailtrap.io",
+        port: 2525,
+        auth: {
+          user: "bcd3e16f23ebe5",
+          pass: "b9fa941bb8bd8a"
+        }
+    });
+    transport.sendMail({
+        from: "security@MoviewApp.com",
+                to: user.email,
+                subject: "password reset successfully",
+       
+                html: `
+                <p>Hello ${user.name},</p>
+                <h1>You change your password successfully</h1>
+              
+                `
+    })
+    
+    res.status(201).json({
+        message: 'password reset successfully',
+       
+    })
+}
+
+exports.signIn = async (req, res) => {
+   try {
+    const { email, password } = req.body
+    
+    const user = await User.findOne({ email })
+    if (!user) {
+            return res.status(401).json({ error: "Email/password mismatch." })
+    }
+    const matched = user.comparePassWord(password)
+    if (!matched) {
+                return res.status(401).json({ error: "Email/password mismatch." })
+    }
+
+const {_id,name} = user
+
+    const jwtToken = jwt.sign({ userId: user._id }, 'duhehfjswhhufegfuhshfufrwuwhfoe')
+    
+    res.json({user:{id:_id,name,email,token:jwtToken}})
+   } catch (error) {
+   next(error.message)
+   }
+ }

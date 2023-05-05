@@ -4,6 +4,7 @@ const express = require('express');
 require('./db')
 const cors = require('cors')
 const app = express();
+const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser')
 require('dotenv').config()
 const { MongoClient, ServerApiVersion } = require('mongodb');
