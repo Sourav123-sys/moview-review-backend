@@ -3,7 +3,10 @@ const { isValidObjectId } = require('mongoose')
 const EmailVerificationToken = require('../models/emailVerifaction')
 const User = require('../models/user')
 const nodemailer = require("nodemailer")
-
+const crypto = require("crypto")
+const { generateOTP, generateMailTransport } = require('../utils/mail')
+const PasswordResetToken = require('../models/passwordResetToken')
+const { generateRandomByte } = require('../utils/helper')
 
 exports.create = async (req, res) => {
     const { name, email, password } = req.body
@@ -16,11 +19,7 @@ exports.create = async (req, res) => {
     await newUser.save()
     
 
-    let OTP = ""
-    for (let i = 0; i <= 3; i++){
-        const randomValue = Math.round(Math.random() * 9)
-        OTP += randomValue
-    }
+    let OTP = generateOTP()
 
     const newEmailVerficationToken = new EmailVerificationToken({ owner: newUser._id, token: OTP })
     
@@ -38,7 +37,6 @@ exports.create = async (req, res) => {
         from: "verificationMoviewApp@gmail.com",
                 to: newUser.email,
                 subject: "Email Verification",
-       
                 html: `
                 <p>Hello ${newUser.name},</p>
                 <h1>Your Verification Code is ${OTP}.</h1>
@@ -122,12 +120,7 @@ exports.resendEmailVerificationToken =async  (req, res) => {
     if (alreadyHasToken ) {
         return res.json({ error: "you can req for another OTP after 1 hour" })
     }
-    let OTP = ""
-    for (let i = 0; i <= 3; i++){
-        const randomValue = Math.round(Math.random() * 9)
-        OTP += randomValue
-    }
-
+    let OTP = generateOTP()
     const newEmailVerficationToken = new EmailVerificationToken({ owner: user._id, token: OTP })
     
     await newEmailVerficationToken.save()
@@ -156,4 +149,58 @@ exports.resendEmailVerificationToken =async  (req, res) => {
        
     })
   
+}
+
+
+exports.forgetPassword = async (req, res) => { 
+    const { email } = req.body
+    if (!email) {
+        return res.json({ error: "email is missing" })
+    }
+    const user = await User.findOne({ email })
+    if (!user) {
+            return res.json({ error: "user not found" })
+    }
+    
+    const alreadyHasToken = await PasswordResetToken.findOne({ owner: user._id })
+    if (alreadyHasToken ) {
+        return res.json({ error: "you can req for another OTP after 1 hour" })
+    }
+
+    // crypto.randomBytes(30, (err, buff) => {
+    //     if (err) {
+    //     return res.status(500).json({ error: err })
+    //     }
+    //     const buffString= buff.toString('hex')
+// })
+    
+    const token = await generateRandomByte()
+    const newPasswordResetToken = await PasswordResetToken({ owner: user._id, token })
+
+    await newPasswordResetToken.save()
+
+    const resetPasswordUrl = `http://localhost:3000/resetPassword?token=${token}&id=${user._id}`
+    var transport = nodemailer.createTransport({
+        host: "sandbox.smtp.mailtrap.io",
+        port: 2525,
+        auth: {
+          user: "bcd3e16f23ebe5",
+          pass: "b9fa941bb8bd8a"
+        }
+    });
+    transport.sendMail({
+        from: "security@MoviewApp.com",
+                to: user.email,
+                subject: "Reset Password Link ",
+       
+                html: `
+                <p>Hello ${user.name},</p>
+                <h1>Here is your reset password link.</h1>
+                <a href='${resetPasswordUrl}'>Change Password</a>
+                `
+    })
+    res.status(201).json({
+        message: 'Reset-Password Link successfully sent in your email.Please change your password.',
+       
+    })
 }
