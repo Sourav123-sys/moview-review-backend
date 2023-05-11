@@ -10,7 +10,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 mongoose.connect(uri).
 then(() => {
-    console.log("db is connected");
+    console.log("mongoose is connected");
 }).catch((err) => {
     console.log("db connection failed :",err);
 })
