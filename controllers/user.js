@@ -74,7 +74,6 @@ exports.emailVerify = async (req, res) => {
     if (!isValidObjectId) {
         return res.json({ error: "Invalid User" })
     }
-
     const user = await User.findById(userId)
 
     if (!user) {
@@ -118,16 +117,15 @@ exports.emailVerify = async (req, res) => {
                 `
     })
     const jwtToken = jwt.sign({ userId: user._id }, 'duhehfjswhhufegfuhshfufrwuwhfoe')
-    res.json({ user: { id: user._id, name: user.name, email: user.email, token: jwtToken }, message: "Email is Verified.you can go to the app now." })
+    res.json({ user: { id: user._id, name: user.name, email: user.email, token: jwtToken,isVerified:user.isVerified }, message: "Email is Verified.you can go to the app now." })
 }
 
 
 exports.resendEmailVerificationToken = async (req, res) => {
 
-
     const { userId } = req.body
     const user = await User.findById(userId)
-
+console.log(user,'user from resentemail verification token')
     if (!user) {
         return res.json({ error: "user not found" })
     }
@@ -284,11 +282,11 @@ console.log(email,password,'signin')
         console.log(matched,'signin')
         if (matched) {
            console.log(matched,'enter into match try')
-            const { _id, name } = user
+            const { _id, name,isVerified } = user
 
             const jwtToken = jwt.sign({ userId: user._id }, 'duhehfjswhhufegfuhshfufrwuwhfoe')
     
-            res.json({ user: { id: _id, name, email, token: jwtToken } })
+            res.json({ user: { id: _id, name, email, token: jwtToken,isVerified } })
         } else {
             return res.status(200).json({ error: "you entered wrong password." })
         }
