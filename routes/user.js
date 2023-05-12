@@ -22,9 +22,10 @@ router.post("/signin",signInValidator,validate, signIn)
 
 router.post("/verifyEmail", emailVerify)
 router.post("/resend-email-verificationToken", resendEmailVerificationToken )
-router.post("/forgot-passWord", forgetPassword )
-router.post("/verify-pass-reset-token", isValidPassResetToken,sendResetPassTokenStatus)
-router.post("/reset-pass",validatePassWord, isValidPassResetToken,resetPassWord)
+
+router.post("/forgotPassword", forgetPassword )
+router.post("/verifyPassResetToken", isValidPassResetToken,sendResetPassTokenStatus)
+router.post("/reset-pass",validate,validatePassWord, isValidPassResetToken,resetPassWord)
  
 
 router.get("/is-auth", isAuth, (req, res) => {

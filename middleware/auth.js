@@ -9,7 +9,7 @@ exports.isAuth = async (req, res,next) => {
     const jwtToken = token.split('Bearer ')[1]
 
     if (!jwtToken) { 
-        return res.status(401).json({ message: 'No token provided.' })
+        return res.status(200).json({ error: 'No token provided.' })
     }
     const decode = jwt.verify(jwtToken, process.env.JWT_SECRET)
     const { userId } = decode
@@ -17,7 +17,7 @@ exports.isAuth = async (req, res,next) => {
     const user = await User.findById(userId)
     console.log(user,'user from is auth')
     if (!user) {
-        return res.status(404).json({ message: 'Invalid token.user not found' })
+        return res.status(200).json({ error: 'Invalid token.user not found' })
     }
     req.user = user
     next()

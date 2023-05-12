@@ -12,6 +12,7 @@ const jwt = require('jsonwebtoken');
 
 exports.create = async (req, res) => {
     const { name, email, password } = req.body
+    console.log(name, email, password,'from create')
     const oldUser = await User.findOne({ email })
 
     if (oldUser) {
@@ -171,6 +172,7 @@ exports.resendEmailVerificationToken = async (req, res) => {
 
 exports.forgetPassword = async (req, res) => {
     const { email } = req.body
+    console.log(email,"email from forgetPassword")
     if (!email) {
         return res.json({ error: "email is missing" })
     }
@@ -230,13 +232,13 @@ exports.sendResetPassTokenStatus = (req, res) => {
 
 exports.resetPassWord = async (req, res) => {
     const { newPassWord, userId } = req.body
-
+console.log(newPassWord, userId ,'newPassWord, userId  from reset')
     const user = await User.findById(userId)
-
+console.log(user,'user from reset pass')
     const matched = await user.comparePassWord(newPassWord)
-
+console.log(matched,'matched from reset pass')
     if (matched) {
-        return res.status(401).json({ error: "you entered your old password.Try to give a new password" })
+        return res.status(200).json({ error: "you entered your old password.Try to give a new password" })
     }
     user.password = newPassWord
     await user.save()
@@ -263,7 +265,7 @@ exports.resetPassWord = async (req, res) => {
                 `
     })
 
-    res.status(201).json({
+    res.status(200).json({
         message: 'password reset successfully',
 
     })
@@ -272,25 +274,28 @@ exports.resetPassWord = async (req, res) => {
 exports.signIn = async (req, res) => {
     try {
         const { email, password } = req.body
-//console.log(email,password,'signin')
+console.log(email,password,'signin')
         const user = await User.findOne({ email })
         
         if (!user) {
-            return res.status(401).json({ error: "Email/password mismatch." })
+            return res.status(200).json({ error: "User doesn't exist." })
         }
-        const matched = user.comparePassWord(password)
-        console.log(matched)
-        if (!matched) {
-            return res.status(401).json({ error: "Email/password mismatch." })
+        const matched =await user.comparePassWord(password)
+        console.log(matched,'signin')
+        if (matched) {
+           console.log(matched,'enter into match try')
+            const { _id, name } = user
+
+            const jwtToken = jwt.sign({ userId: user._id }, 'duhehfjswhhufegfuhshfufrwuwhfoe')
+    
+            res.json({ user: { id: _id, name, email, token: jwtToken } })
+        } else {
+            return res.status(200).json({ error: "you entered wrong password." })
         }
 
-        const { _id, name } = user
-
-        const jwtToken = jwt.sign({ userId: user._id }, 'duhehfjswhhufegfuhshfufrwuwhfoe')
-
-        res.json({ user: { id: _id, name, email, token: jwtToken } })
+      
     } catch (error) {
         console.log(error)
-        next(error.message)
+       next(error.message)
     }
 }

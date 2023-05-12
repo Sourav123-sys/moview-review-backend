@@ -1,4 +1,6 @@
-const { check,validationResult } = require('express-validator');
+const { check, validationResult } = require('express-validator');
+
+
 exports.userValidator = [
     check('name').trim().notEmpty().withMessage("name is invalid"),
   
@@ -7,9 +9,9 @@ exports.userValidator = [
 ]
 
 exports.validatePassWord = [
-    check('name').trim().notEmpty().withMessage("name is invalid"),
+   // check('name').trim().notEmpty().withMessage("name is invalid"),
   
-    check('email').trim().normalizeEmail().notEmpty().isEmail().withMessage("email is invalid"),
+  //  check('email').trim().normalizeEmail().notEmpty().isEmail().withMessage("email is invalid"),
     check('newPassWord').trim().notEmpty().withMessage("password is missing").isLength({ min:4,max:8}).withMessage("password must be 4 to 8 characters")
 ]
 exports.signInValidator= [
