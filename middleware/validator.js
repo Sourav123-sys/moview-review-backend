@@ -19,6 +19,13 @@ exports.signInValidator= [
     check('email').trim().normalizeEmail().notEmpty().isEmail().withMessage("Email is invalid"),
     check('password').trim().notEmpty().withMessage("Password is missing")
 ]
+
+exports.actorValidator= [
+    check('name').trim().notEmpty().withMessage("name is missing"),
+    check('about').trim().notEmpty().withMessage("About is missing"),
+    check('gender').trim().notEmpty().withMessage("Gender  is missing"),
+   
+]
 exports.validate = (req, res, next) => { 
     const error = validationResult(req).array();
     //console.log(error);
