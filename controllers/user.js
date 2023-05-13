@@ -282,11 +282,11 @@ exports.signIn = async (req, res) => {
         console.log(matched, 'signin')
         if (matched) {
             console.log(matched, 'enter into match try')
-            const { _id, name, isVerified } = user
+            const { _id, name,role, isVerified } = user
 
             const jwtToken = jwt.sign({ userId: user._id }, 'duhehfjswhhufegfuhshfufrwuwhfoe')
 
-            res.json({ user: { id: _id, name, email, token: jwtToken, isVerified } })
+            res.json({ user: { id: _id, name, email,role, token: jwtToken, isVerified } })
         } else {
             return res.status(200).json({ error: "you entered wrong password." })
         }

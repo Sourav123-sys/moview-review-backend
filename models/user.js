@@ -19,20 +19,26 @@ const userSchema = mongoose.Schema({
     isVerified: {
         type: Boolean,
         required: true,
-        default:false
+        default: false
     },
+    role: {
+        type: String,
+        required: true,
+        default: 'user',
+        enum: ['admin', 'user']
+    }
 })
-userSchema.pre('save',async function (next) {
-    if (this.isModified('password')) { 
-        this.password= await bcrypt.hash(this.password,10)
+userSchema.pre('save', async function (next) {
+    if (this.isModified('password')) {
+        this.password = await bcrypt.hash(this.password, 10)
     }
     next();
 })
 
-userSchema.methods.comparePassWord = async function (password) { 
-console.log(password,'pass from user model')
+userSchema.methods.comparePassWord = async function (password) {
+    console.log(password, 'pass from user model')
     const result = await bcrypt.compare(password, this.password)
-    console.log(result,'result from user model')
+    console.log(result, 'result from user model')
     return result
 }
-module.exports =mongoose.model("User",userSchema)
+module.exports = mongoose.model("User", userSchema)

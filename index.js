@@ -27,11 +27,13 @@ const corsConfig = {
 //router
 const userRouter = require("./routes/user")
 const actorRouter = require("./routes/actor")
+const movieRouter = require("./routes/movie")
 
 
 
 app.use("/api/user",userRouter);
 app.use("/api/actor",actorRouter );
+app.use("/api/movie",movieRouter );
 
 
 
