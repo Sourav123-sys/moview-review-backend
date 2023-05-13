@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const { ObjectId } = require('mongodb');
+const genres = require('../utils/genres');
 const movieSchema = mongoose.Schema({
     title: {
         type: String,
@@ -25,7 +26,7 @@ const movieSchema = mongoose.Schema({
     status: {
         type: String,
         required: true,
-        enum: ['public', private]
+        enum: ["public", "private"],
     },
     type: {
         type: String,
@@ -60,7 +61,8 @@ const movieSchema = mongoose.Schema({
     poster: {
         type: Object,
         url: {type:String, required:true},
-        public_id: {type:String, required:true},
+        public_id: { type: String, required: true },
+        responsive: [  URL],
         required:true
     },
     trailer: {

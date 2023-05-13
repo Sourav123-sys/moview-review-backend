@@ -9,4 +9,12 @@ const fileFilter = (req,file,cb) => {
     }
     cb(null, true)
 }
+const videoFilter = (req,file,cb) => {
+    console.log(file, 'file')
+    if (!file.mimetype.startsWith('video')) {
+        cb('Supported video files only',false)
+    }
+    cb(null, true)
+}
    exports.uploadImage=multer({storage,fileFilter});
+   exports.uploadVideo=multer({storage,videoFilter});
