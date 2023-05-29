@@ -1,5 +1,5 @@
 const express = require('express');
-const { actorCreate, updateActor, deleteActor, searchActor, latestActors, singleActor } = require('../controllers/actor');
+const { actorCreate, updateActor, deleteActor, searchActor, latestActors, singleActor, getActors } = require('../controllers/actor');
 const { uploadImage } = require('../middleware/multer');
 const { actorValidator, validate } = require('../middleware/validator');
 const { isAuth, isAdmin } = require('../middleware/auth');
@@ -20,7 +20,9 @@ router.delete("/:id",
 
 router.get("/search",isAuth,isAdmin, searchActor)
 
-router.get("/latest-uploads",isAuth,isAdmin, latestActors)
+router.get("/latest-uploads", isAuth, isAdmin, latestActors)
+
+router.get("/actors", isAuth, isAdmin, getActors);
 
 router.get("/single/:id", singleActor)
 

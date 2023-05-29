@@ -43,7 +43,7 @@ exports.validate = (req, res, next) => {
 
 exports.validateMovie = [
 
-    check('name').trim().notEmpty().withMessage("movie name is missing"),
+    check('title').trim().notEmpty().withMessage("movie title is missing"),
     check('storyLine').trim().notEmpty().withMessage("storyLine is missing"),
     check('language').trim().notEmpty().withMessage("language is missing"),
     check('type').trim().notEmpty().withMessage("type is missing"),

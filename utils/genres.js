@@ -1,9 +1,11 @@
 const genres = [
     "Action",
     "Adventure",
+    "Anime",
     "Animation",
     "Biography",
-    "Comedy",
+  "Comedy",
+    "Cartoon",
     "Crime",
     "Documentary",
     "Drama",

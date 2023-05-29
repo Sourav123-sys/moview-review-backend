@@ -117,7 +117,7 @@ exports.emailVerify = async (req, res) => {
                 `
     })
     const jwtToken = jwt.sign({ userId: user._id }, 'duhehfjswhhufegfuhshfufrwuwhfoe')
-    res.json({ user: { id: user._id, name: user.name, email: user.email, token: jwtToken, isVerified: user.isVerified }, message: "Email is Verified.you can go to the app now." })
+    res.json({ user: { id: user._id, name: user.name, email: user.email, token: jwtToken, isVerified: user.isVerified,role:user.role }, message: "Email is Verified.you can go to the app now." })
 }
 
 
@@ -282,11 +282,11 @@ exports.signIn = async (req, res) => {
         console.log(matched, 'signin')
         if (matched) {
             console.log(matched, 'enter into match try')
-            const { _id, name,role, isVerified } = user
+            const { _id, name,role, isVerified, } = user
 
             const jwtToken = jwt.sign({ userId: user._id }, 'duhehfjswhhufegfuhshfufrwuwhfoe')
 
-            res.json({ user: { id: _id, name, email,role, token: jwtToken, isVerified } })
+            res.json({ user: { id: _id, name, email,role, token: jwtToken, isVerified,role } })
         } else {
             return res.status(200).json({ error: "you entered wrong password." })
         }
