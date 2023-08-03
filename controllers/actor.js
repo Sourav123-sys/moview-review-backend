@@ -17,9 +17,9 @@ console.log(process.env.CLOUD_API_NAME,
 )
 exports.actorCreate = async (req, res) => {
     const { name, about, gender } = req.body
-    console.log(name,about,gender,"actor-details");
+    //console.log(name, about, gender, "actor-details");
     const { file } = req
-    console.log(file, 'file from create actor')
+    //console.log(file, 'file from create actor')
     const newActor = new Actor({ name, about, gender })
 
 
@@ -30,7 +30,7 @@ exports.actorCreate = async (req, res) => {
             width: 500,
             crop: "thumb"
         })
-        //   console.log(uploadRes, 'uploadRes')
+        //   //console.log(uploadRes, 'uploadRes')
         const { public_id, secure_url } = uploadRes
         newActor.avatar = { url: secure_url, public_id }
     }
@@ -47,8 +47,8 @@ exports.updateActor = async (req, res) => {
     const { file } = req
     const { id } = req.params
     const actorId = id
-console.log(actorId,'actorId')
-
+    //console.log(actorId, 'actorId')
+    //console.log(req.body, "from update actor");
     if (!isValidObjectId(actorId)) {
         return res.status(200).json({ error: "Invalid request" })
     }
@@ -61,8 +61,8 @@ console.log(actorId,'actorId')
 
     if (public_id && file) {
 
-     const {result} =   await cloudinary.uploader.destroy(public_id)
-        console.log(result, 'result from update actor')
+        const { result } = await cloudinary.uploader.destroy(public_id)
+        //console.log(result, 'result from update actor')
         if (result !== 'ok') {
             return res.status(200).json({ error: "could not remove image from cloud" })
         }
@@ -75,22 +75,22 @@ console.log(actorId,'actorId')
             width: 500,
             crop: "thumb"
         })
-        //   console.log(uploadRes, 'uploadRes')
+        //   //console.log(uploadRes, 'uploadRes')
         const { public_id, secure_url } = uploadRes
-       actor.avatar = { url: secure_url, public_id }
+        actor.avatar = { url: secure_url, public_id }
     }
-    actor.name = name,
+        actor.name = name,
         actor.about = about,
         actor.gender = gender
-    
-    
-        await actor.save()
 
-        res.status(201).json({ id: actor._id, name, about, gender, avatar: actor.avatar?.url }) 
-    
+
+    await actor.save()
+
+    res.status(201).json({ actor: formatActor(actor) })
+
 }
 
-exports.deleteActor = async (req, res) => { 
+exports.deleteActor = async (req, res) => {
 
     const { id } = req.params
     const actorId = id
@@ -103,10 +103,10 @@ exports.deleteActor = async (req, res) => {
     }
     const public_id = actor.avatar?.public_id
 
-    if (public_id ) {
+    if (public_id) {
 
-     const {result} =   await cloudinary.uploader.destroy(public_id)
-        console.log(result, 'result from update actor')
+        const { result } = await cloudinary.uploader.destroy(public_id)
+        //console.log(result, 'result from update actor')
         if (result !== 'ok') {
             return res.status(200).json({ error: "could not remove image from cloud" })
         }
@@ -114,24 +114,25 @@ exports.deleteActor = async (req, res) => {
     }
 
     await Actor.findByIdAndDelete(actorId)
-    res.status(200).json({ message:'record remove successfully' })
+    res.status(200).json({ message: 'record remove successfully' })
 }
 
 
-exports.searchActor = async (req,res) => {
+exports.searchActor = async (req, res) => {
     const { query } = req;
-    console.log(query,"query search actor");
-  const result = await Actor.find({ $text: { $search: `"${query.name}"` } });
-
-  const actors = result.map((actor) => formatActor(actor));
-console.log(actors,"search actor");
-  res.json({ results: actors });
+    //console.log(query, "query search actor");
+     const result = await Actor.find({ $text: { $search: `"${query.name}"` } });
+    // const result = await Actor.find({ name : {$regex:query.name, $options:'1'}});
+//console.log(result,"results from search actor");
+    const actors = result.map((actor) => formatActor(actor));
+    //console.log(actors, "search actor");
+    res.json({ results: actors });
 }
 
-exports.latestActors = async (req,res) => {
+exports.latestActors = async (req, res) => {
     const result = await Actor.find().sort({ createdAt: '-1' }).limit(12)
-    console.log(result,'result from latest actors')
-   res.json(result)
+    //console.log(result, 'result from latest actors')
+    res.json(result)
 }
 exports.singleActor = async (req, res) => {
     const { id } = req.params
@@ -139,27 +140,27 @@ exports.singleActor = async (req, res) => {
     if (!isValidObjectId(actorId)) {
         return res.status(200).json({ error: "Invalid request" })
     }
- 
+
     const actor = await Actor.findById(actorId)
     if (!actor) {
         return res.status(200).json({ error: "Invalid request.actor not found" })
     }
-    console.log(actor,'actor from single actors')
-   res.json(actor)
+    //console.log(actor, 'actor from single actors')
+    res.json(actor)
 }
 
 
 exports.getActors = async (req, res) => {
     const { pageNo, limit } = req.query;
-  console.log(pageNo, limit,"pageNo, limit");
+    //console.log(pageNo, limit, "pageNo, limit");
     const actors = await Actor.find({})
-      .sort({ createdAt: -1 })
-      .skip(parseInt(pageNo) * parseInt(limit))
-      .limit(parseInt(limit));
-  
+        .sort({ createdAt: -1 })
+        .skip(parseInt(pageNo) * parseInt(limit))
+        .limit(parseInt(limit));
+
     const profiles = actors.map((actor) => formatActor(actor));
     res.json({
-      profiles,
+        profiles,
     });
-    console.log(profiles,"profiles with pagination");
-  };
+    //console.log(profiles, "profiles with pagination");
+};

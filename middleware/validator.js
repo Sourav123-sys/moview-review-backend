@@ -30,9 +30,9 @@ exports.actorValidator= [
 ]
 exports.validate = (req, res, next) => { 
     const error = validationResult(req).array();
-    //console.log(error);
+    ////console.log(error);
 //if (!error.isEmpty()) {
-//  console.log(error.array());
+//  //console.log(error.array());
  // return res.status(400).json({ errors: error.array() });
 //}
     if (error.length) {
@@ -72,27 +72,30 @@ exports.validateMovie = [
     check('status').isIn( ["public", "private"]).withMessage("Movie status must be public or private "),
     check('releaseDate').isDate().withMessage("releaseDate is missing"),
 
-    check("trailer")
-    .isObject()
-    .withMessage("trailer must be an object with url and public_id")
-    .custom(({ url, public_id }) => {
-      try {
-        const result = new URL(url);
-        if (!result.protocol.includes("http"))  throw Error("Trailer url is invalid!");
-
-        const arr = url.split("/");
-        const publicId = arr[arr.length - 1].split(".")[0];
-
-        if (public_id !== publicId) throw Error("Trailer public_id is invalid!");
-        
-          return true;
-          
-      } catch (error) {
-        throw Error("Trailer url is invalid!");
-      }
-    }),
+   
     // check("poster").custom((_, { req }) => {
     //     if (!req.file) throw Error("Poster file is missing!");
     //     return true;
     //   }),
 ]
+
+
+exports.validateTrailer = check("trailer")
+  .isObject()
+  .withMessage("trailer must be an object with url and public_id")
+  .custom(({ url, public_id }) => {
+    try {
+      const result = new URL(url);
+      if (!result.protocol.includes("http"))
+        throw Error("Trailer url is invalid!");
+
+      const arr = url.split("/");
+      const publicId = arr[arr.length - 1].split(".")[0];
+
+      if (public_id !== publicId) throw Error("Trailer public_id is invalid!");
+
+      return true;
+    } catch (error) {
+      throw Error("Trailer url is invalid!");
+    }
+  });

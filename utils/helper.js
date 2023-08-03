@@ -8,7 +8,7 @@ exports.generateRandomByte = () => {
             if (err) reject(err);
             const buffString = buff.toString('hex')
 
-            console.log(buffString,"buff")
+            //console.log(buffString,"buff")
             resolve(buffString)
         })
     })

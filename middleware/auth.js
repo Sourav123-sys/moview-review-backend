@@ -6,7 +6,7 @@ const User = require('../models/user');
 
 exports.isAuth = async (req, res,next) => {
     const token  = req.headers.authorization
-    console.log(token, 'token')
+    //console.log(token, 'token')
     
     if (!token) {
         return res.status(200).json({ error: 'No token provided.' })
@@ -21,7 +21,7 @@ exports.isAuth = async (req, res,next) => {
     const { userId } = decode
     
     const user = await User.findById(userId)
-    console.log(user,'user from is auth')
+    //console.log(user,'user from is auth')
     if (!user) {
         return res.status(200).json({ error: 'Invalid token.user not found' })
     }
